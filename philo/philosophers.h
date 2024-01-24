@@ -6,7 +6,7 @@
 /*   By: disantam <disantam@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 14:10:24 by disantam          #+#    #+#             */
-/*   Updated: 2024/01/19 13:00:03 by disantam         ###   ########.fr       */
+/*   Updated: 2024/01/24 17:04:02 by disantam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,12 @@
 
 typedef struct	s_philos
 {
+	int				id;
 	int				nphilos;
 	int				*dead;
-	int				id;
-	int				eating;
+	int				iseating;
 	int 			meals;
+	size_t			isfinished;
 	size_t			last_meal;
 	size_t			start_time;
 	pthread_mutex_t	*r_fork;
@@ -33,20 +34,20 @@ typedef struct	s_philos
 	pthread_mutex_t	*write_lock;
 	pthread_mutex_t	*dead_lock;
 	pthread_mutex_t	*meal_lock;
-	t_data			*data;
+	struct s_data	*data;
 }					t_philos;
 
 typedef struct	s_data
 {
+	int				dead_flag;
+	int				ntte;
 	size_t			nphilos;
 	size_t			ttd;
 	size_t			tte;
-	size_t			ntte;
 	size_t			tts;
 	pthread_mutex_t	write_lock;
 	pthread_mutex_t	meal_lock;
 	pthread_mutex_t	dead_lock;
-	int				dead_flag;
 	pthread_mutex_t	*forks;
 	t_philos		*philos;
 }					t_data;
@@ -56,8 +57,16 @@ int		ft_atoi(const char *str);
 int 	parse_args(t_data *program, int argc, char **argv);
 void	init_philos(t_data *program, t_philos *philos, pthread_mutex_t *mutex);
 
+/* routine.c */
+int		isdead(t_data *data, t_philos *philo);
+int		check_philo(t_data *data, t_philos *philo, size_t *finished);
+void	iseating(t_philos *philo);
+void	issleeping(t_philos *philo);
+
+
 /* utils.c */
 size_t	get_time(void);
-int	ft_usleep(size_t miliseconds);
+int		ft_usleep(size_t miliseconds);
+void	print_status(t_philos *p, char *message);
 
 #endif

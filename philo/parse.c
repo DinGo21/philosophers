@@ -6,7 +6,7 @@
 /*   By: disantam <disantam@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 14:08:43 by disantam          #+#    #+#             */
-/*   Updated: 2024/01/19 13:01:14 by disantam         ###   ########.fr       */
+/*   Updated: 2024/01/24 16:54:44 by disantam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ int	ft_atoi(const char *str)
 		return (-result);
 	return (result);
 }
+
 void	init_philos(t_data *program, t_philos *philos, pthread_mutex_t *mutex)
 {
 	size_t	i;
@@ -50,13 +51,16 @@ void	init_philos(t_data *program, t_philos *philos, pthread_mutex_t *mutex)
 		philos[i].write_lock = &program->write_lock;
 		philos[i].meal_lock = &program->meal_lock;
 		philos[i].dead_lock = &program->dead_lock;
+		philos[i].r_fork = mutex + i;
+		philos[i].l_fork = mutex + i + 1;
+		if (i + 1 == program->nphilos)
+			philos[i].l_fork = mutex;
 		philos[i].data = program;
 		philos[i].meals = 0;
-		philos[i].eating = 0;
+		philos[i].iseating = 0;
+		philos[i].isfinished = 0;
 		philos[i].last_meal = 0;
 		philos[i].start_time = 0;
-		philos[i].l_fork = NULL;
-		philos[i].r_fork = NULL;
 	}
 	program->philos = philos;
 	program->forks = mutex;
@@ -68,7 +72,7 @@ int parse_args(t_data *program, int argc, char **argv)
 	program->ttd = ft_atoi(argv[2]);
 	program->tte = ft_atoi(argv[3]);
 	program->tts = ft_atoi(argv[4]);
-	program->ntte = 0;
+	program->ntte = -1;
 	if (program->nphilos <= 0 || program->ttd <= 0 ||
 		program->tte <= 0 || program->tts <= 0)
 	{
@@ -79,5 +83,8 @@ int parse_args(t_data *program, int argc, char **argv)
 		program->ntte = ft_atoi(argv[5]);
 	}
 	program->dead_flag = 0;
+	pthread_mutex_init(&program->dead_lock, NULL);
+	pthread_mutex_init(&program->meal_lock, NULL);
+	pthread_mutex_init(&program->write_lock, NULL);
 	return (0);
 }

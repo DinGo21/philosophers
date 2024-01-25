@@ -6,7 +6,7 @@
 /*   By: disantam <disantam@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 11:43:13 by disantam          #+#    #+#             */
-/*   Updated: 2024/01/24 17:07:08 by disantam         ###   ########.fr       */
+/*   Updated: 2024/01/25 15:37:38 by disantam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,12 @@
 
 int	isdead(t_data *data, t_philos *philo)
 {
-	if (get_time() - philo->start_time >= data->ttd && philo->iseating != 1 &&
-		philo->meals == 0)
+	pthread_mutex_lock(philo->meal_lock);
+	if (get_time() - philo->last_meal >= data->ttd && philo->iseating != 1)
 	{
-		return (1);
+		return (pthread_mutex_unlock(philo->meal_lock), 1);
 	}
-	if (get_time() - philo->last_meal >= data->ttd && philo->iseating != 1 &&
-		philo->meals > 0)
-	{
-		return (1);
-	}
-	return (0);
+	return (pthread_mutex_unlock(philo->meal_lock), 0);
 }
 
 int	check_philo(t_data *data, t_philos *philo, size_t *finished)
@@ -45,16 +40,18 @@ int	check_philo(t_data *data, t_philos *philo, size_t *finished)
 
 void	iseating(t_philos *philo)
 {
-	print_status(philo, "is eating");
-	philo->last_meal = get_time();
 	philo->iseating = 1;
+	print_status(philo, "is eating");
+	pthread_mutex_lock(philo->meal_lock);
+	philo->last_meal = get_time();
 	philo->meals += 1;
+	pthread_mutex_unlock(philo->meal_lock);
 	ft_usleep(philo->data->tte);
+	philo->iseating = 0;
 }
 
 void	issleeping(t_philos *philo)
 {
-	philo->iseating = 0;
 	print_status(philo, "is sleeping");
 	ft_usleep(philo->data->tts);
 }

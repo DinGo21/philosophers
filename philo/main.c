@@ -6,7 +6,7 @@
 /*   By: disantam <disantam@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 14:11:13 by disantam          #+#    #+#             */
-/*   Updated: 2024/01/24 17:57:07 by disantam         ###   ########.fr       */
+/*   Updated: 2024/01/25 16:40:02 by disantam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,10 @@ void	*monitor_routine(void *program)
 		if (isdead(data, philos + i) == 1)
 		{
 			print_status(philos + i, "died");
+			pthread_mutex_lock(&data->dead_lock);
 			data->dead_flag = 1;
+			pthread_mutex_unlock(&data->dead_lock);
+			break;
 		}
 		check_philo(data, philos + i, &finished);
 		if (++i >= data->nphilos)
@@ -42,20 +45,26 @@ void	*philo_routine(void	*philosopher)
 	t_philos		*philo;
 
 	philo = (t_philos *)philosopher;
-	philo->start_time = get_time();
+	if ((philo->id) % 2 == 0)
+			ft_usleep(1);
 	while (*philo->dead != 1)
 	{
-		print_status(philo, "is thinking");
 		pthread_mutex_lock(philo->r_fork);
 		print_status(philo, "has taken a fork");
+		if (philo->nphilos == 1)
+		{
+			ft_usleep(philo->data->ttd);
+			pthread_mutex_unlock(philo->r_fork);
+			break;
+		}
 		pthread_mutex_lock(philo->l_fork);
 		print_status(philo, "has taken a fork");
 		iseating(philo);
 		pthread_mutex_unlock(philo->r_fork);
 		pthread_mutex_unlock(philo->l_fork);
 		issleeping(philo);
+		print_status(philo, "is thinking");
 	}
-	// pthread_mutex_unlock(philo->dead_lock);
 	return (NULL);
 }
 
@@ -72,6 +81,9 @@ int	init_threads(t_data *program, t_philos *philos,
 			return (1);
 		}
 	}
+	pthread_mutex_init(&program->dead_lock, NULL);
+	pthread_mutex_init(&program->meal_lock, NULL);
+	pthread_mutex_init(&program->write_lock, NULL);
 	i = -1;
 	while (++i < program->nphilos)
 	{

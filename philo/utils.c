@@ -6,7 +6,7 @@
 /*   By: disantam <disantam@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 14:09:33 by disantam          #+#    #+#             */
-/*   Updated: 2024/01/24 17:10:23 by disantam         ###   ########.fr       */
+/*   Updated: 2024/01/25 16:55:36 by disantam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ int	ft_usleep(size_t miliseconds)
 void	print_status(t_philos *p, char *message)
 {
 	pthread_mutex_lock(p->write_lock);
-	printf("%ld %d %s\n", get_time() - p->start_time, p->id, message);
+	if (*p->dead != 1)
+		printf("%ld %d %s\n", get_time() - p->start_time, p->id, message);
 	pthread_mutex_unlock(p->write_lock);
 }

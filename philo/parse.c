@@ -6,7 +6,7 @@
 /*   By: disantam <disantam@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 14:08:43 by disantam          #+#    #+#             */
-/*   Updated: 2024/01/24 16:54:44 by disantam         ###   ########.fr       */
+/*   Updated: 2024/01/25 15:38:26 by disantam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,8 @@ void	init_philos(t_data *program, t_philos *philos, pthread_mutex_t *mutex)
 		philos[i].meals = 0;
 		philos[i].iseating = 0;
 		philos[i].isfinished = 0;
-		philos[i].last_meal = 0;
-		philos[i].start_time = 0;
+		philos[i].last_meal = get_time();
+		philos[i].start_time = get_time();
 	}
 	program->philos = philos;
 	program->forks = mutex;
@@ -83,8 +83,5 @@ int parse_args(t_data *program, int argc, char **argv)
 		program->ntte = ft_atoi(argv[5]);
 	}
 	program->dead_flag = 0;
-	pthread_mutex_init(&program->dead_lock, NULL);
-	pthread_mutex_init(&program->meal_lock, NULL);
-	pthread_mutex_init(&program->write_lock, NULL);
 	return (0);
 }

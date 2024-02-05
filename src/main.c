@@ -6,7 +6,7 @@
 /*   By: disantam <disantam@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 14:11:13 by disantam          #+#    #+#             */
-/*   Updated: 2024/01/25 16:40:02 by disantam         ###   ########.fr       */
+/*   Updated: 2024/02/05 10:22:05 by disantam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	*monitor_routine(void *program)
 			pthread_mutex_lock(&data->dead_lock);
 			data->dead_flag = 1;
 			pthread_mutex_unlock(&data->dead_lock);
-			break;
+			break ;
 		}
 		check_philo(data, philos + i, &finished);
 		if (++i >= data->nphilos)
@@ -46,7 +46,7 @@ void	*philo_routine(void	*philosopher)
 
 	philo = (t_philos *)philosopher;
 	if ((philo->id) % 2 == 0)
-			ft_usleep(1);
+		ft_usleep(1);
 	while (*philo->dead != 1)
 	{
 		pthread_mutex_lock(philo->r_fork);
@@ -55,21 +55,21 @@ void	*philo_routine(void	*philosopher)
 		{
 			ft_usleep(philo->data->ttd);
 			pthread_mutex_unlock(philo->r_fork);
-			break;
+			break ;
 		}
 		pthread_mutex_lock(philo->l_fork);
 		print_status(philo, "has taken a fork");
-		iseating(philo);
+		eating(philo);
 		pthread_mutex_unlock(philo->r_fork);
 		pthread_mutex_unlock(philo->l_fork);
-		issleeping(philo);
+		sleeping(philo);
 		print_status(philo, "is thinking");
 	}
 	return (NULL);
 }
 
-int	init_threads(t_data *program, t_philos *philos,
-				pthread_mutex_t *mutex, pthread_t *threads)
+int	init_threads(t_data *program, pthread_mutex_t *mutex,
+				pthread_t *threads, pthread_t *monitor)
 {
 	size_t	i;
 
@@ -77,9 +77,7 @@ int	init_threads(t_data *program, t_philos *philos,
 	while (++i < program->nphilos)
 	{
 		if (pthread_mutex_init(&mutex[i], NULL) != 0)
-		{
 			return (1);
-		}
 	}
 	pthread_mutex_init(&program->dead_lock, NULL);
 	pthread_mutex_init(&program->meal_lock, NULL);
@@ -87,15 +85,17 @@ int	init_threads(t_data *program, t_philos *philos,
 	i = -1;
 	while (++i < program->nphilos)
 	{
-		if (pthread_create(&threads[i], NULL, &philo_routine, &philos[i]) != 0)
-		{
+		if (pthread_create(&threads[i], NULL, &philo_routine,
+				&program->philos[i]) != 0)
 			return (1);
-		}
 	}
+	if (pthread_create(monitor, NULL, &monitor_routine, program) != 0)
+		return (1);
 	return (0);
 }
 
-int	join_threads(t_data *program, pthread_mutex_t *mutex, pthread_t *threads)
+int	join_threads(t_data *program, pthread_mutex_t *mutex,
+				pthread_t *threads, pthread_t *monitor)
 {
 	size_t	i;
 
@@ -103,17 +103,14 @@ int	join_threads(t_data *program, pthread_mutex_t *mutex, pthread_t *threads)
 	while (++i < program->nphilos)
 	{
 		if (pthread_join(threads[i], NULL) != 0)
-		{
 			return (1);
-		}
 	}
+	if (pthread_join(*monitor, NULL) != 0)
+		return (1);
 	i = -1;
 	while (++i < program->nphilos)
 	{
-		if (pthread_mutex_destroy(&mutex[i]) != 0)
-		{
-			return (1);
-		}
+		pthread_mutex_destroy(&mutex[i]);
 	}
 	pthread_mutex_destroy(&program->meal_lock);
 	pthread_mutex_destroy(&program->write_lock);
@@ -121,7 +118,7 @@ int	join_threads(t_data *program, pthread_mutex_t *mutex, pthread_t *threads)
 	return (0);
 }
 
-int main(int argc, char *argv[])
+int	main(int argc, char *argv[])
 {
 	t_data			program;
 	pthread_mutex_t	mutex[200];
@@ -134,15 +131,13 @@ int main(int argc, char *argv[])
 	if (parse_args(&program, argc, argv) != 0)
 		return (1);
 	init_philos(&program, philos, mutex);
-	if (init_threads(&program, philos, mutex, threads) != 0)
+	if (init_threads(&program, mutex, threads, &monitor) != 0)
 	{
-	 	return (1);
+		return (destroy_mutex(&program, mutex), 1);
 	}
-	pthread_create(&monitor, NULL, &monitor_routine, &program);
-	if (join_threads(&program, mutex, threads) != 0)
+	if (join_threads(&program, mutex, threads, &monitor) != 0)
 	{
-		return (1);
+		return (destroy_mutex(&program, mutex), 1);
 	}
-	pthread_join(monitor, NULL);
 	return (0);
 }

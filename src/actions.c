@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   routine.c                                          :+:      :+:    :+:   */
+/*   actions.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: disantam <disantam@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 11:43:13 by disantam          #+#    #+#             */
-/*   Updated: 2024/01/25 15:37:38 by disantam         ###   ########.fr       */
+/*   Updated: 2024/02/05 10:18:58 by disantam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ int	isdead(t_data *data, t_philos *philo)
 
 int	check_philo(t_data *data, t_philos *philo, size_t *finished)
 {
-	if (philo->meals >= data->ntte && data->ntte != -1 &&
-		philo->isfinished != 1)
+	if (philo->meals >= data->ntte && data->ntte != -1
+		&& philo->isfinished != 1)
 	{
 		philo->isfinished = 1;
 		*finished += 1;
@@ -38,7 +38,7 @@ int	check_philo(t_data *data, t_philos *philo, size_t *finished)
 	return (0);
 }
 
-void	iseating(t_philos *philo)
+void	eating(t_philos *philo)
 {
 	philo->iseating = 1;
 	print_status(philo, "is eating");
@@ -50,7 +50,7 @@ void	iseating(t_philos *philo)
 	philo->iseating = 0;
 }
 
-void	issleeping(t_philos *philo)
+void	sleeping(t_philos *philo)
 {
 	print_status(philo, "is sleeping");
 	ft_usleep(philo->data->tts);

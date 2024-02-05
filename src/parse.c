@@ -6,16 +6,16 @@
 /*   By: disantam <disantam@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 14:08:43 by disantam          #+#    #+#             */
-/*   Updated: 2024/01/25 15:38:26 by disantam         ###   ########.fr       */
+/*   Updated: 2024/02/05 11:04:43 by disantam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-int	ft_atoi(const char *str)
+size_t	ft_atoul(const char *str)
 {
-	int		result;
-	char	sign;
+	size_t	result;
+	int		sign;
 
 	result = 0;
 	sign = 0;
@@ -23,18 +23,16 @@ int	ft_atoi(const char *str)
 		str++;
 	while ((*str == '-' || *str == '+') && (*str < '0' || *str > '9'))
 	{
-		if (*str == '-' && sign != '-' && sign != '+')
-			sign = '-';
-		else if (*str == '+' && sign != '-' && sign != '+')
-			sign = '+';
-		else
-			return (result);
+		if (*str != '-' && *str != '+')
+			return (0);
+		if (*str == '-')
+			sign += 1;
 		str++;
 	}
+	if (sign % 2 != 0)
+		return (0);
 	while (*str != '\0' && *str >= '0' && *str <= '9')
 		result = result * 10 + (*str++ - '0');
-	if (sign == '-')
-		return (-result);
 	return (result);
 }
 
@@ -66,21 +64,23 @@ void	init_philos(t_data *program, t_philos *philos, pthread_mutex_t *mutex)
 	program->forks = mutex;
 }
 
-int parse_args(t_data *program, int argc, char **argv)
+int	parse_args(t_data *program, int argc, char **argv)
 {
 	program->nphilos = ft_atoi(argv[1]);
 	program->ttd = ft_atoi(argv[2]);
 	program->tte = ft_atoi(argv[3]);
 	program->tts = ft_atoi(argv[4]);
 	program->ntte = -1;
-	if (program->nphilos <= 0 || program->ttd <= 0 ||
-		program->tte <= 0 || program->tts <= 0)
+	if (program->nphilos <= 0 || program->ttd <= 0
+		|| program->tte <= 0 || program->tts <= 0)
 	{
 		return (1);
 	}
 	if (argc == 6)
 	{
 		program->ntte = ft_atoi(argv[5]);
+		if (program->ntte <= 0)
+			return (1);
 	}
 	program->dead_flag = 0;
 	return (0);

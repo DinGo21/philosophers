@@ -6,7 +6,7 @@
 /*   By: disantam <disantam@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 14:10:24 by disantam          #+#    #+#             */
-/*   Updated: 2024/02/05 11:04:28 by disantam         ###   ########.fr       */
+/*   Updated: 2024/02/05 11:27:29 by disantam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ typedef struct s_philos
 	int				*dead;
 	int				iseating;
 	int				meals;
-	size_t			isfinished;
+	int				isfinished;
 	size_t			last_meal;
 	size_t			start_time;
 	pthread_mutex_t	*r_fork;
@@ -41,7 +41,7 @@ typedef struct s_data
 {
 	int				dead_flag;
 	int				ntte;
-	size_t			nphilos;
+	int				nphilos;
 	size_t			ttd;
 	size_t			tte;
 	size_t			tts;
@@ -53,13 +53,14 @@ typedef struct s_data
 }					t_data;
 
 /* parse.c */
+int		ft_atoi(const char *str);
 size_t	ft_atoul(const char *str);
 int		parse_args(t_data *program, int argc, char **argv);
 void	init_philos(t_data *program, t_philos *philos, pthread_mutex_t *mutex);
 
 /* routine.c */
 int		isdead(t_data *data, t_philos *philo);
-int		check_philo(t_data *data, t_philos *philo, size_t *finished);
+int		check_philo(t_data *data, t_philos *philo, int *finished);
 void	eating(t_philos *philo);
 void	sleeping(t_philos *philo);
 

@@ -6,7 +6,7 @@
 /*   By: disantam <disantam@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 14:11:13 by disantam          #+#    #+#             */
-/*   Updated: 2024/02/05 10:22:05 by disantam         ###   ########.fr       */
+/*   Updated: 2024/02/05 11:27:07 by disantam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 void	*monitor_routine(void *program)
 {
-	size_t		i;
-	size_t		finished;
+	int			i;
+	int			finished;
 	t_data		*data;
 	t_philos	*philos;
 
@@ -71,7 +71,7 @@ void	*philo_routine(void	*philosopher)
 int	init_threads(t_data *program, pthread_mutex_t *mutex,
 				pthread_t *threads, pthread_t *monitor)
 {
-	size_t	i;
+	int	i;
 
 	i = -1;
 	while (++i < program->nphilos)
@@ -97,7 +97,7 @@ int	init_threads(t_data *program, pthread_mutex_t *mutex,
 int	join_threads(t_data *program, pthread_mutex_t *mutex,
 				pthread_t *threads, pthread_t *monitor)
 {
-	size_t	i;
+	int	i;
 
 	i = -1;
 	while (++i < program->nphilos)

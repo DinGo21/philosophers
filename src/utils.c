@@ -6,7 +6,7 @@
 /*   By: disantam <disantam@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 14:09:33 by disantam          #+#    #+#             */
-/*   Updated: 2024/02/05 10:25:42 by disantam         ###   ########.fr       */
+/*   Updated: 2024/02/05 11:24:46 by disantam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	destroy_mutex(t_data *program, pthread_mutex_t *mutex)
 {
 	int	i;
 
-	i = -1;
+	i = 0;
 	while (++i < program->nphilos)
 	{
 		pthread_mutex_destroy(&mutex[i]);

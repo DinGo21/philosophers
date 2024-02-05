@@ -6,7 +6,7 @@
 /*   By: disantam <disantam@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 11:43:13 by disantam          #+#    #+#             */
-/*   Updated: 2024/02/05 10:18:58 by disantam         ###   ########.fr       */
+/*   Updated: 2024/02/05 11:26:44 by disantam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	isdead(t_data *data, t_philos *philo)
 	return (pthread_mutex_unlock(philo->meal_lock), 0);
 }
 
-int	check_philo(t_data *data, t_philos *philo, size_t *finished)
+int	check_philo(t_data *data, t_philos *philo, int *finished)
 {
 	if (philo->meals >= data->ntte && data->ntte != -1
 		&& philo->isfinished != 1)
